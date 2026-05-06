@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>WheresLuke Publisher</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, serif;
+      background: #f5f4f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .wordmark {
+      font-size: 13px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #999;
+      margin-bottom: 24px;
+    }
+
+    .tab-row {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 24px;
+    }
+
+    .tab {
+      font-family: Georgia, serif;
+      font-size: 13px;
+      padding: 5px 14px;
+      border-radius: 20px;
+      border: 1px solid #ddd;
+      background: none;
+      color: #999;
+      cursor: pointer;
+    }
+
+    .tab.active {
+      background: #111;
+      color: #fff;
+      border-color: #111;
+    }
+
+    label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 6px;
+      font-family: -apple-system, sans-serif;
+    }
+
+    input, textarea {
+      width: 100%;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      color: #111;
+      background: #fafaf8;
+      border: 1px solid #e8e8e4;
+      border-radius: 10px;
+      padding: 10px 13px;
+      margin-bottom: 18px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    input:focus, textarea:focus {
+      border-color: #bbb;
+      background: #fff;
+    }
+
+    input[type="password"] {
+      letter-spacing: 0.1em;
+    }
+
+    textarea {
+      min-height: 140px;
+      resize: vertical;
+      line-height: 1.65;
+    }
+
+    .note {
+      font-family: -apple-system, sans-serif;
+      font-size: 11px;
+      color: #bbb;
+      margin-top: -12px;
+      margin-bottom: 18px;
+      line-height: 1.5;
+    }
+
+    .preview-label {
+      font-family: -apple-system, sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #aaa;
+      margin-bottom: 6px;
+    }
+
+    .preview {
+      border: 1px solid #e8e8e4;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 15px;
+      color: #111;
+      line-height: 1.65;
+      min-height: 52px;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      background: #fafaf8;
+    }
+
+    .preview.empty { color: #ccc; }
+
+    .pub-btn {
+      width: 100%;
+      font-family: Georgia, serif;
+      font-size: 15px;
+      padding: 13px;
+      background: #111;
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      letter-spacing: 0.02em;
+    }
+
+    .pub-btn:active { background: #333; }
+    .pub-btn:disabled { background: #ccc; cursor: default; }
+
+    .status {
+      margin-top: 14px;
+      font-family: -apple-system, sans-serif;
+      font-size: 13px;
+      padding: 10px 13px;
+      border-radius: 10px;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .status.success { display: block; background: #edfaf3; color: #1a7a4a; }
+    .status.error   { display: block; background: #fdeeed; color: #b03030; }
+    .status.loading { display: block; background: #f5f4f0; color: #888; }
+
+    .pane { display: none; }
+    .pane.visible { display: block; }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="wordmark">wheresluke.com</div>
+
+  <div class="tab-row">
+    <button class="tab active" onclick="showTab('publish')">publish</button>
+    <button class="tab" onclick="showTab('settings')">settings</button>
+  </div>
+
+  <div class="pane visible" id="publish-pane">
+    <label>today's update</label>
+    <textarea id="content" placeholder="Work."></textarea>
+
+    <div class="preview-label">preview</div>
+    <div class="preview empty" id="preview">nothing yet</div>
+
+    <button class="pub-btn" id="pub-btn" onclick="publish()">push to wheresluke.com</button>
+    <div class="status" id="status"></div>
+  </div>
+
+  <div class="pane" id="settings-pane">
+    <label>github token</label>
+    <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx" oninput="save()" autocomplete="off" />
+    <div class="note">github.com → settings → developer settings → personal access tokens (classic) → repo scope</div>
+
+    <label>github username</label>
+    <input type="text" id="username" placeholder="woistluke" oninput="save()" autocomplete="off" />
+
+    <label>repository</label>
+    <input type="text" id="repo" placeholder="woistluke.github.io" oninput="save()" autocomplete="off" />
+
+    <label>site title</label>
+    <input type="text" id="site-title" placeholder="Where is Luke?" oninput="save()" />
+
+    <button class="pub-btn" onclick="showTab('publish')">done</button>
+  </div>
+</div>
+
+<script>
+  function showTab(t) {
+    document.getElementById('publish-pane').classList.toggle('visible', t === 'publish');
+    document.getElementById('settings-pane').classList.toggle('visible', t === 'settings');
+    document.querySelectorAll('.tab').forEach((el, i) => {
+      el.classList.toggle('active', (i === 0) === (t === 'publish'));
+    });
+  }
+
+  function save() {
+    localStorage.setItem('wl_token', document.getElementById('token').value);
+    localStorage.setItem('wl_username', document.getElementById('username').value);
+    localStorage.setItem('wl_repo', document.getElementById('repo').value);
+    localStorage.setItem('wl_title', document.getElementById('site-title').value);
+  }
+
+  function load() {
+    document.getElementById('token').value = localStorage.getItem('wl_token') || '';
+    document.getElementById('username').value = localStorage.getItem('wl_username') || 'woistluke';
+    document.getElementById('repo').value = localStorage.getItem('wl_repo') || 'woistluke.github.io';
+    document.getElementById('site-title').value = localStorage.getItem('wl_title') || 'Where is Luke?';
+  }
+
+  document.getElementById('content').addEventListener('input', function() {
+    const p = document.getElementById('preview');
+    if (this.value.trim()) {
+      p.textContent = this.value;
+      p.classList.remove('empty');
+    } else {
+      p.textContent = 'nothing yet';
+      p.classList.add('empty');
+    }
+  });
+
+  async function publish() {
+    const token    = localStorage.getItem('wl_token') || '';
+    const username = localStorage.getItem('wl_username') || 'woistluke';
+    const repo     = localStorage.getItem('wl_repo') || 'woistluke.github.io';
+    const siteTitle = localStorage.getItem('wl_title') || 'Where is Luke?';
+    const content  = document.getElementById('content').value.trim();
+    const status   = document.getElementById('status');
+    const btn      = document.getElementById('pub-btn');
+
+    if (!token)   { showStatus('error', 'add your github token in settings first.'); return; }
+    if (!content) { showStatus('error', 'write something first.'); return; }
+
+    const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+    const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${siteTitle}</title>
+  <style>
+    body { font-family: Georgia, serif; max-width: 600px; margin: 60px auto; padding: 0 20px; text-align: center; }
+    h1 { font-size: 48px; margin-bottom: 8px; }
+    .date { font-size: 13px; color: #999; margin-bottom: 2rem; }
+    p { font-size: 24px; }
+  </style>
+</head>
+<body>
+  <h1>${siteTitle}</h1>
+  <div class="date">${today}</div>
+  <p>${content}</p>
+</body>
+</html>`;
+
+    btn.disabled = true;
+    showStatus('loading', 'pushing to github...');
+
+    try {
+      const getRes = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/index.html`, {
+        headers: { Authorization: `token ${token}`, Accept: 'application/vnd.github.v3+json' }
+      });
+
+      let sha = null;
+      if (getRes.ok) { const d = await getRes.json(); sha = d.sha; }
+
+      const body = { message: `update: ${today}`, content: btoa(unescape(encodeURIComponent(html))) };
+      if (sha) body.sha = sha;
+
+      const putRes = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/index.html`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `token ${token}`,
+          Accept: 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(body)
+      });
+
+      if (putRes.ok) {
+        showStatus('success', `published. live at wheresluke.com in ~30 seconds.`);
+        document.getElementById('content').value = '';
+        document.getElementById('preview').textContent = 'nothing yet';
+        document.getElementById('preview').classList.add('empty');
+      } else {
+        const err = await putRes.json();
+        showStatus('error', `error: ${err.message}`);
+      }
+    } catch(e) {
+      showStatus('error', `network error: ${e.message}`);
+    }
+
+    btn.disabled = false;
+  }
+
+  function showStatus(type, msg) {
+    const s = document.getElementById('status');
+    s.className = 'status ' + type;
+    s.textContent = msg;
+  }
+
+  load();
+</script>
+</body>
+</html>
